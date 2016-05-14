@@ -26,26 +26,6 @@ class SpellChecksController < ApplicationController
     config = FFI::Aspell.config_new
     FFI::Aspell.config_replace(config, 'lang', 'en')
     speller = FFI::Aspell.speller_new(config)
-
-    @suggestions_aspell = {}
-
-    words.each_with_object(@suggestions_aspell) do |w, obj|
-      if !FFI::Aspell.speller_check(speller, w, w.length)
-        list = FFI::Aspell.speller_suggest(speller, w, w.length)
-        elements = FFI::Aspell.word_list_elements(list)
-        sug_words = []
-
-        while next_suggestion = FFI::Aspell.string_enumeration_next(elements)
-          sug_words << next_suggestion
-        end
-
-        FFI::Aspell.string_enumeration_delete(elements)
-
-        @suggestions_aspell[w] = sug_words
-      end
-    end
-
-    FFI::Aspell.speller_delete(speller)
   end
 end
 
